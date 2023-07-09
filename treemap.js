@@ -1,5 +1,5 @@
 let w = 1000
-let h = 600
+let h = 500
 
 let data
 let dataArr = []
@@ -13,6 +13,7 @@ let fullArr = []
 let minVal
 let maxVal
 
+let treeBoard = d3.select('#treeBoard')
 
 let xScale
 let yScale
@@ -36,6 +37,22 @@ d3.select("#treeBoard")
 .attr("margin", 0)
 
 let createTiles = () =>{
+
+
+let hierarchy = d3.hierarchy(data, (node) => node.children)
+                  .sum((node)=>node.value)
+                  .sort((node1, node2)=>node2.value - node1.value)
+
+
+let createTreeMap = d3.treemap()
+                      .size([w, h])
+
+createTreeMap(hierarchy)
+
+console.log(hierarchy.leaves())
+
+let movieTiles = hierarchy.leaves()
+console.log(movieTiles)
 
 dataArr = data.children;
 console.log(dataArr)
@@ -74,16 +91,40 @@ yScale = d3.scaleLinear()
   .domain([minVal, maxVal])
   .range([0, h]);
 
+let block = treeBoard.selectAll('g')
+.data(movieTiles)
+.join('g')
+.attr('transform',(d)=>'translate('+ d.x0 + ', ' + d.y0 +')')
+
+block.append('rect')
+     .attr('class', 'tile')
+     .attr('fill', ((d)=> (
+          d.data.category === "Action" ? "#ff7f00" :
+          d.data.category === "Drama" ? "#984ea3" :
+          d.data.category === "Adventure" ? "#ffff33" :
+          d.data.category === "Family" ? "#4daf4a" :
+          d.data.category === "Animation" ? "#377eb8" :
+          d.data.category === "Comedy" ? "#e41a1c" : "#a65628"))
+          )
+      .attr('width', (d)=>(d.x1-d.x0))
+      .attr('height', (d)=>(d.y1-d.y0))
+      .attr('data-value', (d)=>(d.data.value))
+      .attr('data-name', (d)=>(d.data.name))
+      .attr('data-category', (d)=>(d.data.category))
+
+  block.append('text')
+      .text((d)=> d.data.name)
+      .attr('x', 5)
+      .attr('y', 20)
+
+
+
+
 svg.selectAll('rect')
 .data(fullArr)
 .join('rect')
-.attr('class', 'tile')
-.attr('width', (d)=>(Math.sqrt(xScale(d.value))))
-.attr('height', (d)=>(Math.sqrt(yScale(d.value))))
-.attr('data-value', (d)=>(d.value))
-.attr('data-name', (d)=>(d.name))
-.attr('data-category', (d)=>(d.category))
-.attr('fill', "orange")
+
+
 
 
 
