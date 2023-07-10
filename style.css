@@ -38,6 +38,7 @@ h4 {
   border: 0px;
   border-radius: 2px;
   box-shadow: 0 2px 2px 0 rgb(62, 87, 215);
+  pointer-events: none;
 }
 
 #legend {

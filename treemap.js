@@ -46,6 +46,11 @@ d3.select("#treeBoard")
 .attr("height", h)
 .attr("margin", 0)
 
+d3.select("#tooltip")
+.attr("width", 100)
+.attr("height", 40)
+.attr("margin", 0)
+
 let createTiles = () =>{
 
 
@@ -105,6 +110,24 @@ let block = treeBoard.selectAll('g')
 .data(movieTiles)
 .join('g')
 .attr('transform',(d)=>'translate('+ d.x0 + ', ' + d.y0 +')')
+.on('mouseover', (event, d) => {
+      
+  tooltip.style('visibility', 'visible')
+         .style('left', event.pageX + 20 + 'px')
+         .style('top', event.pageY - 28 + 'px')
+   
+         let revenue = d.data.value
+         let name = d.data.name
+         let category = d.data.category
+  
+
+     tooltip.html(name+'(' + category +')<br> $' + revenue)
+     tooltip.attr('data-value', (revenue))
+     })
+
+ .on('mouseout', (event, d) => {
+  tooltip.style('visibility', 'hidden')
+ })
 
 block.append('rect')
      .attr('class', 'tile')
@@ -121,24 +144,7 @@ block.append('rect')
       .attr('data-value', (d)=>(d.data.value))
       .attr('data-name', (d)=>(d.data.name))
       .attr('data-category', (d)=>(d.data.category))
-      .on('mouseover', (event, d) => {
-      
-       tooltip.style('visibility', 'visible')
-              .style('left', event.pageX + 20 + 'px')
-              .style('top', event.pageY - 28 + 'px')
-        
-              let revenue = d.data.value
-              let name = d.data.name
-              let category = d.data.category
-       
-    
-          tooltip.html(name+'<br>(' + category +') $' + revenue)
-          tooltip.attr('data-value', (revenue))
-          })
-
-      .on('mouseout', (event, d) => {
-       tooltip.style('visibility', 'hidden')
-      })
+     
 
   block.append('text')
       .text((d)=> d.data.name)
