@@ -14,12 +14,16 @@ let minVal
 let maxVal
 
 let treeBoard = d3.select('#treeBoard')
+let legend = d3.select('#legend')
+let tooltip = d3.select('#tooltip')
 
 let xScale
 let yScale
 
 let URL = "https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json"
 
+let colorArr = ["#ff7f00", "#984ea3", "#ffff33", "#4daf4a", "#377eb8", "#e41a1c", "#a65628"]
+console.log(colorArr.length)
 
 async function foo() {
 const response = await fetch(URL)
@@ -30,6 +34,12 @@ createTiles();
 foo();
 
 let svg = d3.select('svg')
+
+
+d3.select("#legend")  
+.attr("width", (colorArr.length*75))
+.attr("height", 25)
+.attr("margin", 0)
 
 d3.select("#treeBoard")
 .attr("width", w)
@@ -99,30 +109,59 @@ let block = treeBoard.selectAll('g')
 block.append('rect')
      .attr('class', 'tile')
      .attr('fill', ((d)=> (
-          d.data.category === "Action" ? "#ff7f00" :
-          d.data.category === "Drama" ? "#984ea3" :
-          d.data.category === "Adventure" ? "#ffff33" :
-          d.data.category === "Family" ? "#4daf4a" :
-          d.data.category === "Animation" ? "#377eb8" :
-          d.data.category === "Comedy" ? "#e41a1c" : "#a65628"))
+          d.data.category === "Action" ? colorArr[0] :
+          d.data.category === "Drama" ? colorArr[1] :
+          d.data.category === "Adventure" ? colorArr[2] :
+          d.data.category === "Family" ? colorArr[3] :
+          d.data.category === "Animation" ? colorArr[4] :
+          d.data.category === "Comedy" ? colorArr[5] : colorArr[6]))
           )
       .attr('width', (d)=>(d.x1-d.x0))
       .attr('height', (d)=>(d.y1-d.y0))
       .attr('data-value', (d)=>(d.data.value))
       .attr('data-name', (d)=>(d.data.name))
       .attr('data-category', (d)=>(d.data.category))
+      .on('mouseover', (event, d) => {
+      
+       tooltip.style('visibility', 'visible')
+              .style('left', event.pageX + 20 + 'px')
+              .style('top', event.pageY - 28 + 'px')
+        
+              let revenue = d.data.value
+              let name = d.data.name
+              let category = d.data.category
+       
+    
+          tooltip.html(name+'<br>(' + category +') $' + revenue)
+          tooltip.attr('data-value', (revenue))
+          })
+
+      .on('mouseout', (event, d) => {
+       tooltip.style('visibility', 'hidden')
+      })
 
   block.append('text')
       .text((d)=> d.data.name)
       .attr('x', 5)
       .attr('y', 20)
 
+  
+let legendBlock = legend.selectAll('g')
+      .data(colorArr)
+      .join('g')
+      .attr('transform',(d, i)=> 'translate(' + 75*i + ',0)')
 
+      legendBlock.append('rect')
+      .attr('fill', (d)=>(d))
+      .attr('class', 'legend-item')
+      .attr('width', '75px')
+      .attr('height', '20px')
 
-
-svg.selectAll('rect')
-.data(fullArr)
-.join('rect')
+    legendBlock.append('text')
+      .data(movieCateg)
+      .text((d)=> d)
+      .attr('x', 5)
+      .attr('y', 13)
 
 
 

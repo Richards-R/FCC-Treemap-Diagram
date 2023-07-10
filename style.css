@@ -1,5 +1,6 @@
 html body {
   min-height: 100%;
+  color: black;
 }
 
 body {
@@ -27,6 +28,8 @@ h4 {
 }
 
 #tooltip {
+  width:auto;
+  height: auto;
   visibility: hidden;
   position: absolute;
   padding: 5px;  
